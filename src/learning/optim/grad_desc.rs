@@ -505,7 +505,7 @@ impl<M> OptimAlgorithm<M> for RMSProp2
             // The cost at end of each pass
             let mut end_cost = 0f64;
             // Permute the vertices
-            rand_utils::in_place_fisher_yates(&mut permutation);
+            // rand_utils::in_place_fisher_yates(&mut permutation);
             for i in &permutation {
                 let (cost, grad) = model.compute_grad(params.data(),
                                                       &inputs.select_rows(&[*i]),
