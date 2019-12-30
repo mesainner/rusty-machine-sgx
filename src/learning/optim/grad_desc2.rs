@@ -75,7 +75,7 @@ impl StochasticGD2 {
 }
 
 impl<M> OptimAlgorithm<M> for StochasticGD2
-    where M: Optimizable<Inputs = Matrix<f64>, Targets = Matrix<f64>>
+    where M: Optimizable<Inputs = Matrix<f64>, Targets = Vector<f64>>
 {
     fn optimize(&self,
                 model: &M,
@@ -103,7 +103,7 @@ impl<M> OptimAlgorithm<M> for StochasticGD2
                 // Compute the cost and gradient for this data pair
                 let (cost, vec_data) = model.compute_grad(optimizing_val.data(),
                                                           &inputs.select_rows(&[*i]),
-                                                          &targets.select_rows(&[*i]));
+                                                          &Vector::new(vec![targets[*i]]));
 
                 // Backup previous velocity
                 let prev_w = delta_w.clone();
