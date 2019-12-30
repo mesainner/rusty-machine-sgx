@@ -216,6 +216,7 @@ pub mod learning {
         }
 
         pub mod grad_desc;
+        pub mod grad_desc2;
         pub mod fmincg;
     }
 
