@@ -14,7 +14,7 @@ use linalg::Vector;
 use linalg::{Matrix, BaseMatrix};
 use rulinalg::utils;
 
-use learning::toolkit::rand_utils;
+//use learning::toolkit::rand_utils;
 
 const LEARNING_EPS: f64 = 1e-20;
 /// Stochastic Gradient Descent algorithm.
@@ -90,7 +90,7 @@ impl<M> OptimAlgorithm<M> for StochasticGD2
         let mut delta_w = Vector::zeros(start.len());
 
         // Set up the indices for permutation
-        let mut permutation = (0..inputs.rows()).collect::<Vec<_>>();
+        let permutation = (0..inputs.rows()).collect::<Vec<_>>();
         // The cost at the start of each iteration
         let mut start_iter_cost = 0f64;
 
@@ -98,7 +98,7 @@ impl<M> OptimAlgorithm<M> for StochasticGD2
             // The cost at the end of each stochastic gd pass
             let mut end_cost = 0f64;
             // Permute the indices
-            rand_utils::in_place_fisher_yates(&mut permutation);
+            // rand_utils::in_place_fisher_yates(&mut permutation);
             for i in &permutation {
                 // Compute the cost and gradient for this data pair
                 let (cost, vec_data) = model.compute_grad(optimizing_val.data(),
@@ -189,7 +189,7 @@ impl<M: Optimizable<Inputs = Matrix<f64>, Targets = Vector<f64>>> OptimAlgorithm
         let mut optimizing_val = Vector::new(start.to_vec());
 
         // Set up the indices for permutation
-        let mut permutation = (0..inputs.rows()).collect::<Vec<_>>();
+        let permutation = (0..inputs.rows()).collect::<Vec<_>>();
         // The cost at the start of each iteration
         let mut start_iter_cost = 0f64;
 
@@ -197,7 +197,7 @@ impl<M: Optimizable<Inputs = Matrix<f64>, Targets = Vector<f64>>> OptimAlgorithm
             // The cost at the end of each stochastic gd pass
             let mut end_cost = 0f64;
             // Permute the indices
-            rand_utils::in_place_fisher_yates(&mut permutation);
+            // rand_utils::in_place_fisher_yates(&mut permutation);
             for i in &permutation {
                 // Compute the cost and gradient for this data pair
                 let (cost, mut vec_data) = model.compute_grad(optimizing_val.data(),
