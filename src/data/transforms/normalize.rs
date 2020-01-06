@@ -26,10 +26,10 @@
 //! let transformed = transformer.transform(inputs).unwrap();
 //! ```
 
-use std::prelude::v1::*;
 use learning::error::{Error, ErrorKind};
-use linalg::{Matrix, MatrixSlice, BaseMatrix, BaseMatrixMut};
-use rulinalg::norm::{MatrixNorm, Euclidean};
+use linalg::{BaseMatrix, BaseMatrixMut, Matrix, MatrixSlice};
+use rulinalg::norm::{Euclidean, MatrixNorm};
+use std::prelude::v1::*;
 
 use super::Transformer;
 
@@ -47,10 +47,11 @@ use std::marker::PhantomData;
 /// See the module description for more information.
 #[derive(Debug)]
 pub struct Normalizer<T: Float, M>
-    where for<'a> M: MatrixNorm<T, MatrixSlice<'a, T>>
+where
+    for<'a> M: MatrixNorm<T, MatrixSlice<'a, T>>,
 {
     norm: M,
-    _marker: PhantomData<T>
+    _marker: PhantomData<T>,
 }
 
 /// Create a `Normalizer` with a Euclidean norm.
@@ -64,7 +65,8 @@ impl<T: Float> Default for Normalizer<T, Euclidean> {
 }
 
 impl<T: Float, M> Normalizer<T, M>
-    where for<'a> M: MatrixNorm<T, MatrixSlice<'a, T>>
+where
+    for<'a> M: MatrixNorm<T, MatrixSlice<'a, T>>,
 {
     /// Constructs a new `Normalizer` with given norm.
     ///
@@ -80,21 +82,23 @@ impl<T: Float, M> Normalizer<T, M>
     pub fn new(norm: M) -> Self {
         Normalizer {
             norm: norm,
-            _marker: PhantomData
+            _marker: PhantomData,
         }
     }
 }
 
 impl<T: Float, M> Transformer<Matrix<T>> for Normalizer<T, M>
-    where for<'a> M: MatrixNorm<T, MatrixSlice<'a, T>>
+where
+    for<'a> M: MatrixNorm<T, MatrixSlice<'a, T>>,
 {
     fn transform(&mut self, mut inputs: Matrix<T>) -> Result<Matrix<T>, Error> {
         let dists: Vec<T> = inputs.row_iter().map(|m| self.norm.norm(&*m)).collect();
         for (mut row, &d) in inputs.row_iter_mut().zip(dists.iter()) {
-
             if !d.is_finite() {
-                return Err(Error::new(ErrorKind::InvalidData,
-                                      "Some data point is non-finite."));
+                return Err(Error::new(
+                    ErrorKind::InvalidData,
+                    "Some data point is non-finite.",
+                ));
             } else if d != T::zero() {
                 // no change if distance is 0
                 *row /= d;
@@ -104,11 +108,10 @@ impl<T: Float, M> Transformer<Matrix<T>> for Normalizer<T, M>
     }
 }
 
-
 #[cfg(test)]
 mod tests {
-    use super::*;
     use super::super::Transformer;
+    use super::*;
     use linalg::Matrix;
 
     use std::f64;

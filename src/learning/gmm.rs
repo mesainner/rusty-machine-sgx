@@ -30,14 +30,14 @@
 //! // Probabilities that each point comes from each Gaussian.
 //! println!("{:?}", post_probs.data());
 //! ```
-use std::prelude::v1::*;
-use linalg::{Matrix, MatrixSlice, Vector, BaseMatrix, BaseMatrixMut, Axes};
+use linalg::{Axes, BaseMatrix, BaseMatrixMut, Matrix, MatrixSlice, Vector};
+use rulinalg::matrix::decomposition::PartialPivLu;
 use rulinalg::utils;
-use rulinalg::matrix::decomposition::{PartialPivLu};
+use std::prelude::v1::*;
 
-use learning::{LearningResult, UnSupModel};
-use learning::toolkit::rand_utils;
 use learning::error::{Error, ErrorKind};
+use learning::toolkit::rand_utils;
+use learning::{LearningResult, UnSupModel};
 
 /// Covariance options for GMMs.
 ///
@@ -53,7 +53,6 @@ pub enum CovOption {
     /// Only the diagonal covariance structure.
     Diagonal,
 }
-
 
 /// A Gaussian Mixture Model
 #[derive(Debug, Serialize, Deserialize)]
@@ -74,7 +73,10 @@ impl UnSupModel<Matrix<f64>, Matrix<f64>> for GaussianMixtureModel {
         let reg_value = if inputs.rows() > 1 {
             1f64 / (inputs.rows() - 1) as f64
         } else {
-            return Err(Error::new(ErrorKind::InvalidData, "Only one row of data provided."));
+            return Err(Error::new(
+                ErrorKind::InvalidData,
+                "Only one row of data provided.",
+            ));
         };
 
         // Initialization:
@@ -113,7 +115,6 @@ impl UnSupModel<Matrix<f64>, Matrix<f64>> for GaussianMixtureModel {
         } else {
             Err(Error::new_untrained())
         }
-
     }
 }
 
@@ -163,11 +164,20 @@ impl GaussianMixtureModel {
     ///
     /// - Mixture weights do not have length k.
     /// - Mixture weights have a negative entry.
-    pub fn with_weights(k: usize, mixture_weights: Vector<f64>) -> LearningResult<GaussianMixtureModel> {
+    pub fn with_weights(
+        k: usize,
+        mixture_weights: Vector<f64>,
+    ) -> LearningResult<GaussianMixtureModel> {
         if mixture_weights.size() != k {
-            Err(Error::new(ErrorKind::InvalidParameters, "Mixture weights must have length k."))
+            Err(Error::new(
+                ErrorKind::InvalidParameters,
+                "Mixture weights must have length k.",
+            ))
         } else if mixture_weights.data().iter().any(|&x| x < 0f64) {
-            Err(Error::new(ErrorKind::InvalidParameters, "Mixture weights must have only non-negative entries."))
+            Err(Error::new(
+                ErrorKind::InvalidParameters,
+                "Mixture weights must have only non-negative entries.",
+            ))
         } else {
             let sum = mixture_weights.sum();
             let normalized_weights = mixture_weights / sum;
@@ -225,7 +235,11 @@ impl GaussianMixtureModel {
         self.max_iters = iters;
     }
 
-    fn initialize_covariances(&self, inputs: &Matrix<f64>, reg_value: f64) -> LearningResult<Matrix<f64>> {
+    fn initialize_covariances(
+        &self,
+        inputs: &Matrix<f64>,
+        reg_value: f64,
+    ) -> LearningResult<Matrix<f64>> {
         match self.cov_option {
             CovOption::Diagonal => {
                 let variance = inputs.variance(Axes::Row)?;
@@ -237,9 +251,10 @@ impl GaussianMixtureModel {
                 let mut cov_mat = Matrix::zeros(inputs.cols(), inputs.cols());
                 for (j, mut row) in cov_mat.row_iter_mut().enumerate() {
                     for (k, elem) in row.iter_mut().enumerate() {
-                        *elem = inputs.row_iter().map(|r| {
-                            (r[j] - means[j]) * (r[k] - means[k])
-                        }).sum::<f64>();
+                        *elem = inputs
+                            .row_iter()
+                            .map(|r| (r[j] - means[j]) * (r[k] - means[k]))
+                            .sum::<f64>();
                     }
                 }
                 cov_mat *= reg_value;
@@ -262,7 +277,8 @@ impl GaussianMixtureModel {
 
         if let Some(ref covars) = self.model_covars {
             for cov in covars {
-                let lup = PartialPivLu::decompose(cov.clone()).expect("Covariance could not be lup decomposed");
+                let lup = PartialPivLu::decompose(cov.clone())
+                    .expect("Covariance could not be lup decomposed");
                 let covar_det = lup.det();
                 // TODO: We can probably remove this inverse for a more stable solve elsewhere.
                 let covar_inv = lup.inverse().map_err(Error::from)?;
@@ -284,8 +300,8 @@ impl GaussianMixtureModel {
                     let mu_j = MatrixSlice::from_matrix(means, [j, 0], 1, means.cols());
                     let diff = x_i - mu_j;
 
-                    let pdf = (&diff * &cov_invs[j] * diff.transpose() * -0.5).into_vec()[0]
-                        .exp() / cov_sqrt_dets[j];
+                    let pdf = (&diff * &cov_invs[j] * diff.transpose() * -0.5).into_vec()[0].exp()
+                        / cov_sqrt_dets[j];
                     pdfs.push(pdf);
                 }
 
@@ -299,7 +315,10 @@ impl GaussianMixtureModel {
             }
         }
 
-        Ok((Matrix::new(n, self.comp_count, member_weights_data), log_lik))
+        Ok((
+            Matrix::new(n, self.comp_count, member_weights_data),
+            log_lik,
+        ))
     }
 
     fn update_params(&mut self, inputs: &Matrix<f64>, membership_weights: Matrix<f64>) {
@@ -333,7 +352,6 @@ impl GaussianMixtureModel {
             }
 
             new_covs.push(cov_mat / sum_weights[k]);
-
         }
 
         self.model_means = Some(new_means);

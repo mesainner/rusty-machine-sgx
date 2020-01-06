@@ -106,10 +106,11 @@
 
 #![deny(missing_docs)]
 #![warn(missing_debug_implementations)]
-
-#![cfg_attr(all(feature = "mesalock_sgx",
-                not(target_env = "sgx")), no_std)]
-#![cfg_attr(all(target_env = "sgx", target_vendor = "mesalock"), feature(rustc_private))]
+#![cfg_attr(all(feature = "mesalock_sgx", not(target_env = "sgx")), no_std)]
+#![cfg_attr(
+    all(target_env = "sgx", target_vendor = "mesalock"),
+    feature(rustc_private)
+)]
 
 #[cfg(all(feature = "mesalock_sgx", not(target_env = "sgx")))]
 #[macro_use]
@@ -135,9 +136,11 @@ pub mod prelude;
 ///
 /// This module contains reexports of common tools from the rulinalg crate.
 pub mod linalg {
-    pub use rulinalg::matrix::{Axes, Matrix, MatrixSlice, MatrixSliceMut, BaseMatrix, BaseMatrixMut};
-    pub use rulinalg::vector::Vector;
+    pub use rulinalg::matrix::{
+        Axes, BaseMatrix, BaseMatrixMut, Matrix, MatrixSlice, MatrixSliceMut,
+    };
     pub use rulinalg::norm;
+    pub use rulinalg::vector::Vector;
 }
 
 /// Module for data handling
@@ -150,15 +153,15 @@ pub mod learning {
     pub mod dbscan;
     pub mod glm;
     pub mod gmm;
+    pub mod gp;
+    pub mod k_means;
+    pub mod knn;
     pub mod lin_reg;
     pub mod logistic_reg;
-    pub mod k_means;
-    pub mod nnet;
-    pub mod gp;
-    pub mod svm;
     pub mod naive_bayes;
-    pub mod knn;
+    pub mod nnet;
     pub mod pca;
+    pub mod svm;
 
     pub mod error;
 
@@ -195,11 +198,12 @@ pub mod learning {
             type Targets;
 
             /// Compute the gradient for the model.
-            fn compute_grad(&self,
-                            params: &[f64],
-                            inputs: &Self::Inputs,
-                            targets: &Self::Targets)
-                            -> (f64, Vec<f64>);
+            fn compute_grad(
+                &self,
+                params: &[f64],
+                inputs: &Self::Inputs,
+                targets: &Self::Targets,
+            ) -> (f64, Vec<f64>);
         }
 
         /// Trait for optimization algorithms.
@@ -207,17 +211,18 @@ pub mod learning {
             /// Return the optimized parameter using gradient optimization.
             ///
             /// Takes in a set of starting parameters and related model data.
-            fn optimize(&self,
-                        model: &M,
-                        start: &[f64],
-                        inputs: &M::Inputs,
-                        targets: &M::Targets)
-                        -> Vec<f64>;
+            fn optimize(
+                &self,
+                model: &M,
+                start: &[f64],
+                inputs: &M::Inputs,
+                targets: &M::Targets,
+            ) -> Vec<f64>;
         }
 
+        pub mod fmincg;
         pub mod grad_desc;
         pub mod grad_desc2;
-        pub mod fmincg;
     }
 
     /// Module for learning tools.
