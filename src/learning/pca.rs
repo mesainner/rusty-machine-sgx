@@ -86,6 +86,24 @@ impl PCA {
             Some(ref rot) => Ok(rot),
         }
     }
+
+    /// set param
+    pub fn set_param(
+        &mut self,
+        param_n: usize,
+        param_center: bool,
+        param_n_features: usize,
+        param_centers: Vector<f64>,
+        param_components: Matrix<f64>,
+        param_inv: bool,
+    ) {
+        self.n = Some(param_n);
+        self.center = param_center;
+        self.n_features = Some(param_n_features);
+        self.centers = Some(param_centers);
+        self.components = Some(param_components);
+        self.inv = param_inv;
+    }
 }
 
 /// The default PCA.
