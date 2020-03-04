@@ -88,14 +88,14 @@ impl<K: Kernel> SVM<K> {
     ///
     /// let _ = SVM::new(SquaredExp::default(), 0.3);
     /// ```
-    pub fn new(ker: K, lambda: f64) -> SVM<K> {
+    pub fn new(ker: K, lambda: f64, optim_iters: usize) -> SVM<K> {
         SVM {
             ker: ker,
             alpha: None,
             train_inputs: None,
             train_targets: None,
             lambda: lambda,
-            optim_iters: 100,
+            optim_iters: optim_iters,
         }
     }
     /// set alpha
