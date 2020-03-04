@@ -98,6 +98,18 @@ impl<K: Kernel> SVM<K> {
             optim_iters: 100,
         }
     }
+    /// set alpha
+    pub fn set_alpha(&mut self, param: Vector<f64>) {
+        self.alpha = Some(param);
+    }
+    /// set train_inputs
+    pub fn set_train_inputs(&mut self, param: Matrix<f64>) {
+        self.train_inputs = Some(param);
+    }
+    /// set train_targets
+    pub fn set_train_targets(&mut self, param: Vector<f64>) {
+        self.train_targets = Some(param);
+    }
 }
 
 impl<K: Kernel> SVM<K> {
