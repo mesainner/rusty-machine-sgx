@@ -98,6 +98,20 @@ impl<T: Distribution> NaiveBayes<T> {
     pub fn distr(&self) -> Option<&T> {
         self.distr.as_ref()
     }
+
+    /// Set param
+    pub fn set_param(
+        &mut self,
+        distr: T,
+        cluster_count: usize,
+        class_prior:Vec<f64>,
+        class_counts: Vec<usize>,
+    ) {
+        self.distr = Some(distr);
+        self.cluster_count = Some(cluster_count);
+        self.class_prior = Some(class_prior);
+        self.class_counts = class_counts;
+    }
 }
 
 /// Train and predict from the Naive Bayes model.
