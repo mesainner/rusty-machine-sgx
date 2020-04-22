@@ -204,7 +204,7 @@ impl UnSupModel<Matrix<f64>, Matrix<f64>> for PCA {
         } else {
             inputs.clone()
         };
-        let (_, _, mut v) = data.svd().unwrap();
+        let (_, _, mut v) = data.svd()?;
         if inputs.cols() > inputs.rows() {
             v = v.transpose();
             self.inv = true;
