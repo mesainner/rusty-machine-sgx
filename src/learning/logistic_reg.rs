@@ -118,14 +118,12 @@ impl<A: OptimAlgorithm<BaseLogisticRegressor>> LogisticRegressor<A> {
                     feature_importance: self.base.parameters().unwrap().data()[i],
                 });
             }
-            println!("before importance_result: {:?}", importance_result);
             importance_result.sort_by(|b, a| {
                 a.feature_importance
                     .partial_cmp(&b.feature_importance)
                     .unwrap()
-            });            
+            });
 
-            println!("after importance_result: {:?}", importance_result);
             return Some(importance_result);
         }
 
