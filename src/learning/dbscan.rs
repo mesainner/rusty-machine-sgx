@@ -161,12 +161,14 @@ impl DBSCAN {
     }
 
     /// Set the param
-    pub fn set_param(&mut self, 
-        eps: f64, 
-        min_points: usize, 
-        clusters: Option<Vector<Option<usize>>>, 
-        visited: Vec<bool>, 
-        cluster_data: Option<Matrix<f64>> ) {
+    pub fn set_param(
+        &mut self,
+        eps: f64,
+        min_points: usize,
+        clusters: Option<Vector<Option<usize>>>,
+        visited: Vec<bool>,
+        cluster_data: Option<Matrix<f64>>,
+    ) {
         self.eps = eps;
         self.min_points = min_points;
         self.clusters = clusters;

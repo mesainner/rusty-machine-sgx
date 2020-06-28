@@ -44,6 +44,15 @@ use linalg::Vector;
 use linalg::{BaseMatrix, Matrix};
 use std::prelude::v1::*;
 
+/// The Gbdt feature importances
+#[derive(Default, Debug, Clone)]
+pub struct LRFeatureImportance {
+    /// feature_index
+    pub feature_index: usize,
+    /// feature_importance
+    pub feature_importance: f64,
+}
+
 /// Logistic Regression Model.
 ///
 /// Contains option for optimized parameter.
@@ -96,6 +105,30 @@ impl<A: OptimAlgorithm<BaseLogisticRegressor>> LogisticRegressor<A> {
     /// Set the parameters
     pub fn set_parameters(&mut self, params: Vector<f64>) {
         self.base.parameters = Some(params);
+    }
+
+    /// Get feature importance
+    pub fn get_feature_importances(&self) -> Option<Vec<LRFeatureImportance>> {
+        if self.base.parameters().is_some() {
+            let mut importance_result: Vec<LRFeatureImportance> =
+                Vec::with_capacity(self.base.parameters().unwrap().size());
+            for i in 0..self.base.parameters().unwrap().size() {
+                importance_result.push(LRFeatureImportance {
+                    feature_index: i,
+                    feature_importance: self.base.parameters().unwrap().data()[i],
+                });
+            }
+            println!("before importance_result: {:?}", importance_result);
+            importance_result.sort_by(|b, a| {
+                a.feature_importance
+                    .partial_cmp(&b.feature_importance)
+                    .unwrap()
+            });
+            println!("after importance_result: {:?}", importance_result);
+            return Some(importance_result);
+        }
+
+        None
     }
 }
 

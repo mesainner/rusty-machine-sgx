@@ -104,7 +104,7 @@ impl<T: Distribution> NaiveBayes<T> {
         &mut self,
         distr: T,
         cluster_count: usize,
-        class_prior:Vec<f64>,
+        class_prior: Vec<f64>,
         class_counts: Vec<usize>,
     ) {
         self.distr = Some(distr);
