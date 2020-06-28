@@ -123,7 +123,8 @@ impl<A: OptimAlgorithm<BaseLogisticRegressor>> LogisticRegressor<A> {
                 a.feature_importance
                     .partial_cmp(&b.feature_importance)
                     .unwrap()
-            });
+            });            
+
             println!("after importance_result: {:?}", importance_result);
             return Some(importance_result);
         }
