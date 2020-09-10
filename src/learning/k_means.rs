@@ -394,10 +394,23 @@ impl Initializer for KPlusPlus {
 /// Sample from an unnormalized distribution.
 ///
 /// The input to this function is assumed to have all positive entries.
-fn sample_discretely(unnorm_dist: &Vector<f64>) -> usize {
-    assert!(unnorm_dist.size() > 0, "No entries in distribution vector.");
+fn sample_discretely(unnorm_dist: &Vector<f64>) -> LearningResult<usize> {
+    //assert!(unnorm_dist.size() > 0, "No entries in distribution vector.");
+    if unnorm_dist.size() <= 0 {
+        return Err(Error::new(
+            ErrorKind::InvalidData,
+            "No entries in distribution vector.",
+        ));
+    }
 
     let sum = unnorm_dist.sum();
+
+    if sum == 0.0f64 {
+        return Err(Error::new(
+            ErrorKind::InvalidData,
+            "unnorm_dist sum = 0 ,train failed",
+        ));
+    }
 
     let rand = thread_rng().gen_range(0.0f64, sum);
 
@@ -406,7 +419,7 @@ fn sample_discretely(unnorm_dist: &Vector<f64>) -> usize {
         tempsum += *p;
 
         if rand < tempsum {
-            return i;
+            return Ok(i);
         }
     }
 
